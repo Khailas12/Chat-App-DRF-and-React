@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     
     # apps
     'authentication',
+    'message',
 ]
 
 

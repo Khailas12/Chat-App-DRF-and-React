@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from flask_sqlalchemy import Model
+from rest_framework.viewsets import ModelViewSet
+from . import models, serializers
 
-# Create your views here.
+
+class GenericFileUploadView(ModelViewSet):
+    queryset = models.GenericFileUpload.objects.all()
+    serializer_class = serializers.GenericFileUploadSerializer
+    
+    
