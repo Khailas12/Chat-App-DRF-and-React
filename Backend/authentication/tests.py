@@ -5,30 +5,65 @@ from django.contrib.auth.models import User
 
 
 class AuthViewsTests(APITestCase):
+    login_url = "/api/token/"
+    register_url = "/api/token/register"
+    refresh_url = "/api/token/refresh"
 
-    def setUp(self):
-        self.username = 'usuario'
-        self.password = 'contrasegna'
-        self.data = {
-            'username': self.username,
-            'password': self.password
+    def test_register(self):
+        payload = {
+            "username": "adefemigreat",
+            "password": "ade123",
+            "email": "adefemigreat@yahoo.com"
         }
 
-    def test_current_user(self):
+        response = self.client.post(self.register_url, data=payload)
 
-        # URL using path name
-        url = reverse('tokenAuth')
+        # check that we obtain a status of 201
+        self.assertEqual(response.status_code, 201)
 
-        # Create a user is a workaround in order to authentication works
-        user = User.objects.create_user(username='usuario', email='usuario@mail.com', password='contrasegna')
-        self.assertEqual(user.is_active, 1, 'Active User')
+    def test_login(self):
+        payload = {
+            "username": "adefemigreat",
+            "password": "ade123",
+            "email": "adefemigreat@yahoo.com"
+        }
 
-        # First post to get token
-        response = self.client.post(url, self.data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)
-        token = response.data['token']
+        # register
+        self.client.post(self.register_url, data=payload)
 
-        # Next post/get's will require the token to connect
-        self.client.credentials(HTTP_AUTHORIZATION='JWT {0}'.format(token))
-        response = self.client.get(reverse('currentUser'), data={'format': 'json'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.content)
+        # login
+        response = self.client.post(self.login_url, data=payload)
+        result = response.json()
+
+        # check that we obtain a status of 200
+        self.assertEqual(response.status_code, 200)
+
+        # check that we obtained both the refresh and access token
+        self.assertTrue(result["access"])
+        self.assertTrue(result["refresh"])
+
+    def test_refresh(self):
+        payload = {
+            "username": "adefemigreat",
+            "password": "ade123",
+            "email": "adefemigreat@yahoo.com"
+        }
+
+        # register
+        self.client.post(self.register_url, data=payload)
+
+        # login
+        response = self.client.post(self.login_url, data=payload)
+        refresh = response.json()["refresh"]
+
+        # get refresh
+        response = self.client.post(
+            self.refresh_url, data={"refresh": refresh})
+        result = response.json()
+
+        # check that we obtain a status of 200
+        self.assertEqual(response.status_code, 200)
+
+        # check that we obtained both the refresh and access token
+        self.assertTrue(result["access"])
+        self.assertTrue(result["refresh"])
