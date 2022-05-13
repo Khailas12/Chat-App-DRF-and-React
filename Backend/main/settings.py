@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from decouple import config
-from django import conf
+from dotenv import load_dotenv
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -162,23 +162,33 @@ SIMPLE_JWT = {
 
 
 # AWS
-S3_BUCKET_URL = config('s3_BUCKET_URL') 
+
+load_dotenv()
+aws_access_key_id = os.getenv('AWSAccessKeyId')
+aws_secret_key = os.getenv('AWSSecretKey')
+aws_bucket_name = os.getenv('AWS_bucket_name')
+
+
+# S3_BUCKET_URL = config('s3_BUCKET_URL') 
 SATIC_URL = 'staticfiles'
 
-AWS_ACCESS_KEY_ID = config('AWS_S3_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_S3_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-AWS_HOST_REGION = config('AWS_HOST_REGION')
+AWS_ACCESS_KEY_ID = aws_access_key_id
+AWS_SECRET_ACCESS_KEY = aws_secret_key
+AWS_STORAGE_BUCKET_NAME = aws_bucket_name
+AWS_HOST_REGION = 'US East (N. Virginia) us-east-1'
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_DEFAULT_ACL = None
+
+# AWS_QUERYSTRING_AUTH = False
 
 AWS_LOCATION = 'static/'
 
 MEDIA_URL = 'media/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '/static'),
+    os.path.join(BASE_DIR, 'static/'),
 ]
+
 STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
