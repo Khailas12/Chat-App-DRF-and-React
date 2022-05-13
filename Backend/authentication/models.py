@@ -5,7 +5,6 @@ from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
-
     def create_user(self, username, password, **extra_fields):
         if not username:
             raise ValueError("Username field is required")
@@ -34,6 +33,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
