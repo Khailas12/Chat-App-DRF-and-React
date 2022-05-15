@@ -5,6 +5,7 @@ from six import BytesIO
 from PIL import Image
 
 
+
 def create_image(storage, filename, size=(100, 100), image_mode='RGB', image_format='PNG'):
     data = BytesIO()
     Image.new(image_mode, size).save(data, image_format)
@@ -19,8 +20,15 @@ class TestFileUpload(APITestCase):
     file_upload_url = '/message/file-upload'
 
     def test_file_uplpad(self):
+        # initilization
         the_image = create_image(None, 'batman.png')
-        the_image_file = SimpleUploadedFile('font.png', the_image.getvalue())
+        the_image_file = SimpleUploadedFile('front.png', the_image.getvalue())
         data = {
-            
+            'file-upload': the_image_file
         }
+        
+        # process
+        response = self.client.post(self.file_upload_url, data=data)        
+        result = response.json()
+        
+        print(result)
