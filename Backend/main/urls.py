@@ -9,7 +9,6 @@ urlpatterns = [
     
     path('admin/', admin.site.urls),
     path('api/', include('authentication.urls')),
-    path('message', include('message.urls'))
+    path('message/', include('message.urls'))
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-

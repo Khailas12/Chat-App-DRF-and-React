@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 # from message_control.models import GenericFileUpload
 from django.utils import timezone
+from message.models import GenericFileUpload
 
 
 class CustomUserManager(BaseUserManager):
@@ -33,7 +34,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -44,3 +45,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        CustomUser, related_name='user_profile', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    caption = models.CharField(max_length=100)
+    about = models.TextField()
+    profile_pic = models.ForeignKey(
+        GenericFileUpload, related_name='profile_pic', on_delete=models.SET_NULL, null=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.user.username
