@@ -5,6 +5,4 @@ from . import models, serializers
 
 class GenericFileUploadView(ModelViewSet):
     queryset = models.GenericFileUpload.objects.all()
-    serializer_class = serializers.GenericFileUploadSerializer
-    
-    
+    serializer_class = serializers.GenericFileUploadSerializer  
