@@ -6,6 +6,6 @@ from .views import GenericFileUploadView
 router = DefaultRouter(trailing_slash=False)
 router.register('file-upload/', GenericFileUploadView)
 
-urlpatterns = [
+urlpatterns = [ # message/
     path('', include(router.urls)),
 ]
