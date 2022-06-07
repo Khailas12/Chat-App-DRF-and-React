@@ -7,50 +7,61 @@ from django.contrib.auth.password_validation import validate_password
 
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'username',
+        ]
+
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
-        required = True,
-        validators = [UniqueValidator(
-            queryset=UserProfile.objects.all()
-        )]
+        required=True, 
+        validators=[UniqueValidator(queryset=UserProfile.objects.all())]
     )
+    
     password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password]
     )
-    password_2=serializers.CharField(
-        write_only=True, required=True
-    )
+    password2 = serializers.CharField(write_only=True, required=True)
     
-    fields = (
-        'first_name',
-        'last_name'
-        'username',
-        'email',
-        'password',
-        'password_2',
-        )
-    
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password_2']:
-            raise serializers.ValidationError({
-                'password': 'Password does not match'
-            })
-        return attrs
-    
-    def create(self, validated_data):
-        user = UserProfile.objects.create(
-            username = validated_data['username'],
-            email = validated_data['email'],
-            first_name = validated_data['first_name'],
-            last_name = validated_data['last_name']
-        )
-    
+    class Meta:
+        model = UserProfile
+        fields = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'password',
+            'password2',
+        ]
         extra_kwargs = {
             'first_name' : {'required': True},
             'last_name' : {'required': True}
         }
         
-        user.set_password(validated_data['password'])
+    def validata(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError(
+                {'password': 'Password Does not match'}
+            )
+        return attrs
+    
+    
+    def create(self, validatad_data):
+        user = UserProfile.objects.create(
+            first_name = validatad_data['first_name'],
+            last_name = validatad_data['last_name'],
+            username = validatad_data['username'],
+            email = validatad_data['email'],
+            password = validatad_data['password'],
+            password2 = validatad_data['password2'],
+        )
+        
+        user.set_password(validatad_data['password'])
         user.save()
         return user
     
